@@ -1,0 +1,12 @@
+{
+	"string" : "string", 
+	"number" : 1,
+	"object" : {
+		"array" : [1, 3, 4]
+	},
+	"array" : [
+		{
+			"float" : 1.2222
+		}
+	]
+}
