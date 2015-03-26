@@ -8,7 +8,9 @@ import (
 
 
 func main () {
-	const PATH := "./data.json"
+	const (
+		PATH = "./data.json"
+	)
 	fi, err := os.Open(PATH)
 	defer fi.Close()
 
