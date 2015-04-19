@@ -4,11 +4,12 @@
   "description": "config rule, assert json",
   "main": "index.js",
   "dependencies": {
+  },
+  "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-contrib-jshint": "^0.11.1"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "grunt test"
   },
