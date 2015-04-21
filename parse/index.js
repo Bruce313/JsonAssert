@@ -1,3 +1,8 @@
+var rules = require("../rules");
+var MapRule = rules.MapRule;
+
+var fs = require("fs");
+
 var parse = function (filePath) {
     var assertStr = fs.readFileSync(filePath, {encoding: "utf8"});
     var config = JSON.parse(assertStr);
@@ -11,17 +16,20 @@ var parse = function (filePath) {
     }
 };
 var parseObject = function (config) {
-    var self = config.self;
-    var ret = {};
-    if (self instanceof Array) {
-        ret.self = parseRuleArray(self);
-    } else (self instanceof String) {
-        ret.self = parseRuleString();
-    }
-    ret.prop = {};
-    for (var k i config.prop) {
-        var rules = config.prop[k];
-    }
+    return new MapRule(config, function () {
+        console.log("final", arguments);
+    });
+    // var self = config.self;
+    // var ret = {};
+    // if (self instanceof Array) {
+    //     ret.self = parseRuleArray(self);
+    // } else (self instanceof String) {
+    //     ret.self = parseRuleString();
+    // }
+    // ret.prop = {};
+    // for (var k i config.prop) {
+    //     var rules = config.prop[k];
+    // }
 };
 
 var parseRuleArray = function (arr) {

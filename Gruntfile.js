@@ -2,7 +2,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         watch: {
             script: {
-                files: ["Gruntfile.js", "asserts/*.js", "rules/*.js"],
+                files: ["*.js", "**/*.js", "!node_modules/"],
                 tasks: ["jshint"]
             }
         },
