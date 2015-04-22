@@ -7,7 +7,7 @@ function ArrayRule (config, onComplete, id) {
     this.name = config.name;
     this.id = id;
     this.onComplete = onComplete || function () {
-        console.warn(this.name, "complete but no one care");
+        console.warn(this.name, " complete but no one care");
     };
 
     this.resultMap = {};
@@ -19,7 +19,7 @@ function ArrayRule (config, onComplete, id) {
         this.elIndexRules[k] = validateManager.getValidate(config.elIndex[k]);
     }, this);
 }
-ArrayRule.prototype.go = function(first_argument) {
+ArrayRule.prototype.go = function(data) {
     // body...
 };
 ArrayRule.prototype.collectResult = function(result) {
