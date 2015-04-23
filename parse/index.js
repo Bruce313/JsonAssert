@@ -2,8 +2,12 @@ var rules = require("../rules");
 var MapRule = rules.MapRule;
 
 var fs = require("fs");
-
-var parse = function (filePath) {
+// command: string, array, 'file filename'
+var parse = function (command) {
+    var isFile = (command.split(" ")[0] === "file");
+    if (isFile) {
+        return parseFile(command);
+    }
     var assertStr = fs.readFileSync(filePath, {encoding: "utf8"});
     var config = JSON.parse(assertStr);
     switch(config.type) {
@@ -14,6 +18,11 @@ var parse = function (filePath) {
         case "basic":
             return parseBasic(config);
     }
+};
+var parseFile = function (command) {
+    var len = command.split(" ");
+    
+    var fileName = 
 };
 var parseObject = function (config) {
     return new MapRule(config, function () {
