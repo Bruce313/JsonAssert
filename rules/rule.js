@@ -4,7 +4,6 @@ function Rule (config, onComplete) {
     this.id = uuid.v4();
 
     this.name = config.name;
-    this.id = id;
     this.onComplete = onComplete || function () {
         console.warn(this.name, " complete but no one care");
     };
@@ -18,7 +17,9 @@ Rule.prototype.collectResult = function(id, result, data, rule) {
         rule: rule
     };
     if (result === false) {
-        console.log("%s failed, data:%s", this.name, data);
+        console.error("Rule: ( %s ) failed, data:%s", rule.name, data);
+    } else {
+    	console.info("Rule: ( %s ) passed", rule.name);
     }
     var map = this.resultMap;
     if (Object.keys(map).reduce(function (p, c) {
@@ -42,5 +43,5 @@ exports = module.exports = Rule;
 var empRule = function () {};
 empRule.prototype = Rule.prototype;
 
-exports.empRule = empRule;
+exports.AbstractRule = empRule;
 

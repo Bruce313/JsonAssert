@@ -8,3 +8,9 @@ exports.split = function (str, char) {
         return exports.trim(s);
     })
 };
+
+exports.inherit = function (sub, sup) {
+	var emp = function () {};
+	emp.prototype = sup.prototype;
+	sub.prototype = new emp();
+};

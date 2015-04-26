@@ -3,6 +3,7 @@ var _util = require("../_util");
 var MapRule = rules.MapRule;
 var ArrayRule = rules.ArrayRule;
 var SingleRule = rules.SingleRule;
+var GroupRuleFactory = rules.GroupRuleFactory;
 
 
 var format = require("util").format;

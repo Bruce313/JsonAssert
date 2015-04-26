@@ -1,48 +1,52 @@
 var Rule = require("./rule");
+var inherit = require("../_util").inherit;
 //@abstract
 function GroupRule (config, onComplete) {
     var self = this;
-    Rule.call(this. config, onComplete);
+    Rule.call(this, config, onComplete);
 
     var parse = require("../parse").parse;
     this.rules = config.map(function (c) {
-        return parse(c, self.collectResult.bind(self), id);
-    }).forEach(function (r) {
+        return parse(c, self.collectResult.bind(self));
+    })
+    this.rules.forEach(function (r) {
         self.resultMap[r.id] = null;
     });
 }
+inherit(GroupRule, Rule);
 GroupRule.prototype.go = function(data) {
     this.rules.forEach(function (r) {
         r.go(data);
     });
 };
 
-function AndGroupRule (config, onComplete, id, parse) {
-    GroupRule.call(this, config, onComplete, id);
+function AndGroupRule (config, onComplete) {
+    GroupRule.call(this, config, onComplete);
 }
-AndGroupRule.prototype = new GroupRule();
+inherit(AndGroupRule, GroupRule);
 
-function OrGroupRule (config, onComplete, id, parse) {
-    GroupRule.call(this, config, onComplete, id);  
+function OrGroupRule (config, onComplete) {
+    GroupRule.call(this, config, onComplete);  
 }
-OrGroupRule.prototype = new GroupRule();
+inherit(OrGroupRule, GroupRule);
+
 OrGroupRule.prototype.reduceResult = function() {
     var self = this;
     return Object.keys(self.resultMap).map(function (k) {
         return self.resultMap[k].result;
-    }).reduce(functon (p, c) {
+    }).reduce(function (p, c) {
         return p || c;
     });
 };
 
-function NotGroupRule (config, onComplete, id, parse) {
-    GroupRule.call(this, config, onComplete, id);
+function NotGroupRule (config, onComplete) {
+    GroupRule.call(this, config, onComplete);
 }
-NotGroupRule.prototype = new GroupRule();
+inherit(NotGroupRule, GroupRule);
 NotGroupRule.prototype.reduceResult = function() {
       return !Object.keys(self.resultMap).map(function (k) {
         return self.resultMap[k].result;
-    }).reduce(functon (p, c) {
+    }).reduce(function (p, c) {
         return p || c;
     });
 };
@@ -50,15 +54,15 @@ NotGroupRule.prototype.reduceResult = function() {
 
 
 
-var GroupRuleFactory = function (config, onComplete, id, parse) {
+var GroupRuleFactory = function (config, onComplete) {
     var logic = config[0];
-    if (logic in ["&", "|", "!"]) {
-        var conf = config.slice(1);
-        return (logic == "&") ? new AndGroupRule(conf, onComplete, id, parse) :
-            (logic == "|") ? new OrGroupRule(conf, onComplete, id, parse) : 
-            new NotGroupRule(conf, onComplete, id, parse);
+    if(logic === "|") {
+        return new OrGroupRule(config.slice(1), onComplete);
     }
-    return new AndGroupRule(config, onComplete, id, parse);
+    if (logic === "!") {
+        return new NotGroupRule(config.slice(1), onComplete);
+    }
+    return new AndGroupRule(config, onComplete);
 }
 
 module.exports = GroupRuleFactory;

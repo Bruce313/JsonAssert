@@ -1,4 +1,5 @@
 var Rule = require("./rule");
+var AbstractRule = Rule.AbstractRule;
 
 function ArrayRule (config, onComplete) {
     Rule.call(this, config, onComplete);
@@ -14,6 +15,7 @@ function ArrayRule (config, onComplete) {
         this.resultMap[eleIndexId] = null;
     }, this);
 }
+ArrayRule.prototype = new AbstractRule();
 ArrayRule.prototype.go = function(data) {
     this.data = data;
     this.selfRule.go(data);

@@ -3,7 +3,7 @@
     "name": "test", 
     "self": "contain a b c",
     "prop": {
-        "a": "s",
+        "a": ["|", "s", "int"],
         "b": "int",
         "c": "float"
     }
