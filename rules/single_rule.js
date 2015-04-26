@@ -14,8 +14,8 @@ function SingleRule (config, onComplete) {
     if (validate.length == 1) {
         this.go = function (data) {
             this.data = data;
-            this.result = validate(data);
-            this.onComplete(this.id, this.result, this.data, this);
+            var result = validate(data);
+            this.onComplete(this.id, result, data, config);
         };
     } else {
         //async

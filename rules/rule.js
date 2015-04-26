@@ -10,22 +10,22 @@ function Rule (config, onComplete) {
 
     this.resultMap = {};
 }
-Rule.prototype.collectResult = function(id, result, data, rule) {
+Rule.prototype.collectResult = function(id, result, data, name) {
     this.resultMap[id] = {
         result: result,
         data: data,
-        rule: rule
+        name: name
     };
     if (result === false) {
-        console.error("Rule: ( %s ) failed, data:%s", rule.name, data);
+        console.error("Rule: ( %s ) failed, because %s not match %s", name, data, name);
     } else {
-    	console.info("Rule: ( %s ) passed", rule.name);
+    	//console.info("Rule: ( %s ) passed", rule.name);
     }
     var map = this.resultMap;
     if (Object.keys(map).reduce(function (p, c) {
         return !!map[p] && !!map[c];
     })) {
-        this.onComplete(id, this.reduceResult(), this.data, this);
+        this.onComplete(id, this.reduceResult(), this.data, this.name);
     }
 };
 
