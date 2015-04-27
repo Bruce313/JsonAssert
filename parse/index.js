@@ -12,20 +12,20 @@ var fs = require("fs");
 
 //TODO:remove id
 //XXX: remove onComplete, add method: listen 'onComplete' and bind listener in it
-var parse = function (command, onComplete, id) {
+var parse = function (command) {
     //console.log("begin parse: command:%s", command);
     if (typeof command === "string") {
         var isFile = (_util.split(command)[0] === "file");
         if (isFile) {
-            return parseFile(command, onComplete, id, parse);
+            return parseFile(command);
         }
-        return new SingleRule(command, onComplete, id, parse);
+        return new SingleRule(command);
     }
     if (command instanceof Array) {
-        return GroupRuleFactory(command, onComplete, id, parse);
+        return GroupRuleFactory(command);
     }
 };
-var parseFile = function (command, onComplete, id, parse) {
+var parseFile = function (command) {
     //delay error handle
     //define own errors
     //console.log("parse file, command:", command);
@@ -46,13 +46,13 @@ var parseFile = function (command, onComplete, id, parse) {
     var type = config.type;
     switch (type) {
         case "basic":
-            return new SingleRule(config, onComplete, id, parse);
+            return new SingleRule(config);
         case "group":
-            return GroupRuleFactory(config, onComplete, id, parse);
+            return GroupRuleFactory(config);
         case "array":
-            return new ArrayRule(config, onComplete, id, parse);
+            return new ArrayRule(config);
         case "object":
-            return new MapRule(config, onComplete, id, parse);
+            return new MapRule(config);
     }
 };
 

@@ -11,6 +11,7 @@ function GroupRule (config, onComplete) {
     })
     this.rules.forEach(function (r) {
         self.resultMap[r.id] = null;
+        r.on("fail", self.collectResult);
     });
 }
 inherit(GroupRule, Rule);

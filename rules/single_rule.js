@@ -7,7 +7,7 @@ var validateManager = require("../validate").validateManager;
 //note: if give a sync func, this func must have on param only
 //config {string}
 function SingleRule (config) {
-	Rule.call(this, config, onComplete);
+	Rule.call(this, config);
     this.name = config;
 	var validate = validateManager.getValidate(config);
     //suport sync

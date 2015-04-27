@@ -1,17 +1,20 @@
 var Rule = require("./rule");
 var AbstractRule = Rule.AbstractRule;
 
-function ArrayRule (config, onComplete) {
-    Rule.call(this, config, onComplete);
+function ArrayRule (config) {
+    Rule.call(this, config);
 
     var parse = require("../parse").parse;
-    this.selfRule = parse(config.self, this.collectResult.bind(this));
-    this.elementRule = parse(config.ele, this.collectResult.bind(this));
+    this.selfRule = parse(config.self);
+    this.elementRule = parse(config.ele);
+    this.selfRule.on("fail", this.collectResult.bind(this));
+    this.elementRule.on("fail", this.collectResult.bind(this));
+
     this.resultMap[this.selfRule.id] = this.resultMap[this.elementRule.id] = null;
     this.eleIndexRules = {};
     Object.keys(config.elIndex).forEach(function (k) {
-        var eleIndexId = uuid.v4();
-        this.eleIndexRules[k] = parse(config.elIndex[k], this.collectResult.bind(this), eleIndexId);
+        this.eleIndexRules[k] = parse(config.elIndex[k]);
+        this.eleIndexRules[k].on("fail", this.collectResult.bind(this));
         this.resultMap[eleIndexId] = null;
     }, this);
 }
