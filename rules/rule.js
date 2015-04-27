@@ -3,7 +3,7 @@ var uuid = require("node-uuid");
 var mixin = require("../_util.js").mixin;
 
 
-function Rule (config, onComplete) {
+function Rule (config) {
     mixin(this, Event);
     this.id = uuid.v4();
 
@@ -15,11 +15,11 @@ function Rule (config, onComplete) {
     this.resultMap = {};
 }
 //stack {[Stack]}
-Rule.prototype.collectResult = function(id, result, stacks, name) {
+Rule.prototype.collectResult = function(id, result, errors, name) {
     var self = this;
     this.resultMap[id] = {
         result: result,
-        stacks: stacks,
+        errors: errors,
         name: name
     };
     var map = this.resultMap;
@@ -29,12 +29,18 @@ Rule.prototype.collectResult = function(id, result, stacks, name) {
         if (this.reduceResult()) {
             this.emit("pass", this.data, this.name);
         } else {
-            var stacks = Object.keys(self.resultMap)
+            var errors = Object.keys(self.resultMap)
             .map(function (k) {return self.resultMap[k]})
             .filter(function(res) {return !res.result;})
-            .map(function(res) {return res.stacks;});
+            .map(function(res) {return res.errors;});
+            var thisErr = {
+                id: this.id,
+                name: this.name,
+                data: this.data,
+                errors: errors
+            };
 
-            this.emit("fail", this.id, stacks, this.name);
+            this.emit("fail", this.id, thisErr, this.name);
         }
     }
 };

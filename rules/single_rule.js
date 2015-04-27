@@ -6,7 +6,7 @@ var validateManager = require("../validate").validateManager;
 //validate:  function (data, callback:function (result:boolean, data, rule) )
 //note: if give a sync func, this func must have on param only
 //config {string}
-function SingleRule (config, onComplete) {
+function SingleRule (config) {
 	Rule.call(this, config, onComplete);
     this.name = config;
 	var validate = validateManager.getValidate(config);
@@ -16,7 +16,7 @@ function SingleRule (config, onComplete) {
             this.data = data;
             var result = validate(data);
             if(result) {
-                this.emit("pass", this.data, this.name);
+                this.emit("pass", this.id, result, this.data, this.name);
             } else {
                 this.emit("fail", this.id, result, data, config);
             }
@@ -31,11 +31,19 @@ function SingleRule (config, onComplete) {
     }
 }
 
-SingleRule.prototype = new AbstractRule();
-
-SingleRule.prototype.reduceResult = function() {
-    return this.resultMap.result.result;
+SingleRule.prototype.collectResult = function(result, errMsg) {
+    if (result) {
+        this.emit("pass", this.id, this.data, this.name);
+    } else {
+        var err = {
+            id: this.id,
+            name: this.name,
+            errors: errMsg || (this.data + " not match rule:" + this.name)
+        };
+        this.emit("fail", this.id, err, this.name);
+    }
 };
 
+SingleRule.prototype = new AbstractRule();
 
 module.exports = SingleRule;
