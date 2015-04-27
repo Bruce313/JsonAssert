@@ -14,3 +14,10 @@ exports.inherit = function (sub, sup) {
 	emp.prototype = sup.prototype;
 	sub.prototype = new emp();
 };
+
+exports.mixin = function (context, constructor) {
+    var trait = new constructor(Array.prototype.slice(arguments, 2));
+    for (var k in trait) {
+        context[k] = trait[k];
+    }
+};

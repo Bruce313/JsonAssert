@@ -15,7 +15,11 @@ function SingleRule (config, onComplete) {
         this.go = function (data) {
             this.data = data;
             var result = validate(data);
-            this.onComplete(this.id, result, data, config);
+            if(result) {
+                this.emit("pass", this.data, this.name);
+            } else {
+                this.emit("fail", this.id, result, data, config);
+            }
         };
     } else {
         //async
