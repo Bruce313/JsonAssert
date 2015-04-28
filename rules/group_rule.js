@@ -3,16 +3,15 @@ var inherit = require("../_util").inherit;
 //@abstract
 function GroupRule (config, onComplete) {
     var self = this;
-    Rule.call(this, config, onComplete);
+    Rule.call(this, config);
+
+    this.name = config.slice(1).join(" " + config[0] + " ");
 
     var parse = require("../parse").parse;
-    this.rules = config.map(function (c) {
+    this.rules = config.slice(1).map(function (c) {
         return parse(c, self.collectResult.bind(self));
-    })
-    this.rules.forEach(function (r) {
-        self.resultMap[r.id] = null;
-        r.on("fail", self.collectResult);
     });
+    this.addRule.apply(this, this.rules);
 }
 inherit(GroupRule, Rule);
 GroupRule.prototype.go = function(data) {
@@ -55,15 +54,18 @@ NotGroupRule.prototype.reduceResult = function() {
 
 
 
-var GroupRuleFactory = function (config, onComplete) {
+var GroupRuleFactory = function (config) {
     var logic = config[0];
     if(logic === "|") {
-        return new OrGroupRule(config.slice(1), onComplete);
+        return new OrGroupRule(config);
     }
     if (logic === "!") {
-        return new NotGroupRule(config.slice(1), onComplete);
+        return new NotGroupRule(config);
     }
-    return new AndGroupRule(config, onComplete);
+    if (logic === "&") {
+        return new NotGroupRule(config);
+    }
+    return new AndGroupRule(["&"].concat(config));
 }
 
 module.exports = GroupRuleFactory;

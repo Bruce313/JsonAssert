@@ -12,6 +12,12 @@ function Rule (config) {
     this.resultMap = {};
 }
 //stack {[Stack]}
+Rule.prototype.handleFail = function(id, errors, name) {
+    this.collectResult(id, false, errors, name);
+};
+Rule.prototype.handlePass = function(id, data, name) {
+    this.collectResult(id, true, data, name);
+};
 Rule.prototype.collectResult = function(id, result, errors, name) {
     var self = this;
     this.resultMap[id] = {
@@ -22,15 +28,12 @@ Rule.prototype.collectResult = function(id, result, errors, name) {
     };
     var map = this.resultMap;
     if (Object.keys(map).reduce(function (p, c) {
-    	console.log(!!map[p], !!map[c]);
-        return !!map[p] && !!map[c];
-    })) {
-   		 console.log("map", map);
-
+        return p && (!!map[c]);
+    }, true)) {
         if (this.reduceResult()) {
             this.emit("pass", this.data, this.name);
         } else {
-            var errors = Object.keys(self.resultMap)
+            var errs = Object.keys(self.resultMap)
             .map(function (k) {return self.resultMap[k]})
             .filter(function(res) {return !res.result;})
             .map(function(res) {return res.errors;});
@@ -38,29 +41,27 @@ Rule.prototype.collectResult = function(id, result, errors, name) {
                 id: this.id,
                 name: this.name,
                 data: this.data,
-                errors: errors
+                errors: errs
             };
-            console.log("emit fail", this.name);
             this.emit("fail", this.id, thisErr, this.name);
         }
     }
 };
 
 Rule.prototype.reduceResult = function () {
-	console.log("reduce");
     var self = this;
     return Object.keys(self.resultMap).map(function (k) {
-    	console.log("reduce", self.resultMap[k]);
         return self.resultMap[k].result;
     }).reduce(function (p, c) {
         return p && c;
     });
 };
+Rule.prototype.addRule = function() {
+    Array.prototype.forEach.call(arguments, function (r) {
+        r.on("pass", this.handlePass.bind(this));
+        r.on("fail", this.handleFail.bind(this));
+        this.resultMap[r.id] = null;
+    }, this);
+};
 
 exports = module.exports = Rule;
-
-var empRule = function () {};
-empRule.prototype = Rule.prototype;
-
-exports.AbstractRule = empRule;
-

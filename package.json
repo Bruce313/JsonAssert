@@ -4,6 +4,7 @@
   "description": "config rule, assert json",
   "main": "index.js",
   "dependencies": {
+    "better-console": "^0.2.4",
     "is_js": "^0.7.3",
     "node-uuid": "^1.4.3"
   },

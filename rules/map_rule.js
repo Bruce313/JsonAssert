@@ -1,33 +1,39 @@
 var Rule = require("./rule");
-var AbstractRule = Rule.AbstractRule;
 var uuid = require("node-uuid");
+
+var inherit = require("../_util").inherit;
 
 function MapRule (config) {
     
     Rule.call(this, config);
 
     var parse = require("../parse").parse;//require at this point to avoid circle dependency
-    this.selfRule = parse(config.self);
-    this.selfRule.on("fail", this.collectResult.bind(this));
-    this.resultMap[this.selfRule.id] = null;
+
+    if (config.self) {
+        this.selfRule = parse(config.self);
+        this.addRule(this.selfRule);
+    }
 
     this.propRules = {};
-    Object.keys(config.prop).forEach(function (k) {
-        var pr = parse(config.prop[k], this.collectResult.bind(this));
-        pr.on("fail", this.collectResult.bind(this));
-        this.propRules[k] = pr;
-        this.resultMap[pr.id] = null;
-    }, this);
+    if (config.prop) {
+        Object.keys(config.prop).forEach(function (k) {
+            var pr = parse(config.prop[k], this.collectResult.bind(this));
+            this.propRules[k] = pr;
+            this.addRule(pr);
+        }, this);
+    }
 }
 
-MapRule.prototype = new AbstractRule();
+inherit(MapRule, Rule);
 
 MapRule.prototype.go = function(data) {
     this.data = data;
-    this.selfRule.go(data);
+    this.selfRule && this.selfRule.go(data);
     Object.keys(data).forEach(function (k) {
         var pr = this.propRules[k];
-        pr.go(data[k]);
+        if (pr) {
+            pr.go(data[k]);
+        }
     }, this);
 };
 

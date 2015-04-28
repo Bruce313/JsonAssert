@@ -1,9 +1,9 @@
 {
     "type": "object",
     "name": "test", 
-    "self": "contain a b c d",
+    "self": "contain a b c",
     "prop": {
-        "a": "int",
+        "a": ["s", "len > 10", "= b"],
         "b": "int",
         "c": "float"
     }

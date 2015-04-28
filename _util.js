@@ -1,3 +1,4 @@
+var console = require("better-console");
 exports.trim = function (str) {
     return str.replace(/^\s+|\s$/, "");
 };
@@ -20,4 +21,32 @@ exports.mixin = function (context, constructor) {
     for (var k in trait) {
         context[k] = trait[k];
     }
+};
+
+//errors: {
+// id
+// name
+// errors || errMsg
+//}
+exports.printErrorTree = function (errors, offset) {
+    offset = offset || 0;
+    var prefix = "";
+    for (var i = 0; i < offset; i++ ) {
+        prefix = prefix + "\t";
+    }
+    var name = errors.name;
+    var errs = errors.errors;
+    if (errs) {
+        console.error(prefix, name + " fails, becauseof:");
+        offset++;
+        errs.forEach(function (e) {
+            exports.printErrorTree(e, offset);
+        });
+        return;
+    }
+    if (errors.errMsg) {
+        console.error(prefix, name + " fails, becauseof:", errors.errMsg);
+        return;
+    }
+    throw new Error("illegal errors for printErrorTree");
 };

@@ -1,28 +1,36 @@
 var Rule = require("./rule");
-var AbstractRule = Rule.AbstractRule;
+
+var inherit = require("../_util").inherit;
 
 function ArrayRule (config) {
     Rule.call(this, config);
 
     var parse = require("../parse").parse;
-    this.selfRule = parse(config.self);
-    this.elementRule = parse(config.ele);
-    this.selfRule.on("fail", this.collectResult.bind(this));
-    this.elementRule.on("fail", this.collectResult.bind(this));
 
-    this.resultMap[this.selfRule.id] = this.resultMap[this.elementRule.id] = null;
+    if (config.self) {
+        this.selfRule = parse(config.self);
+        this.addRule(this.selfRule);
+    }
+    if (config.ele) {
+        this.elementRule = parse(config.ele);
+        this.addRule(this.elementRule);
+    }
+
     this.eleIndexRules = {};
-    Object.keys(config.elIndex).forEach(function (k) {
-        this.eleIndexRules[k] = parse(config.elIndex[k]);
-        this.eleIndexRules[k].on("fail", this.collectResult.bind(this));
-        this.resultMap[eleIndexId] = null;
-    }, this);
+
+    if (config.eleIndex) {
+        Object.keys(config.eleIndex).forEach(function (k) {
+            this.eleIndexRules[k] = parse(config.elIndex[k]);
+            this.addRule(this.eleIndexRules[k]);
+        }, this);
+    }
 }
-ArrayRule.prototype = new AbstractRule();
+inherit(ArrayRule, Rule);
 ArrayRule.prototype.go = function(data) {
     this.data = data;
-    this.selfRule.go(data);
-    data.forEach(function (el) { this.elementRule.go(el);});
+    this.selfRule && this.selfRule.go(data);
+    this.elementRule && data.forEach(function (el) { this.elementRule.go(el);});
+    
     Object.keys(this.eleIndexRules).forEach(function (k) {
         var index = parseInt(k);
         this.eleIndexRules[k].go(data[index]);
